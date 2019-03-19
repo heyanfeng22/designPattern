@@ -1,0 +1,1 @@
+spring 利用DispatcherServlet 分发不同的路径请求时用到了委派模式
