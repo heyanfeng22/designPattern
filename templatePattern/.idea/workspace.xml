@@ -12,42 +12,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="LoginModel.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/template/javaCallBack/LoginModel.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="469">
-              <caret line="40" column="18" selection-start-line="40" selection-start-column="18" selection-end-line="40" selection-end-column="18" />
-              <folding>
-                <element signature="e#335#336#0" expanded="true" />
-                <element signature="e#365#366#0" expanded="true" />
-                <element signature="e#415#416#0" expanded="true" />
-                <element signature="e#453#454#0" expanded="true" />
-                <element signature="e#487#488#0" expanded="true" />
-                <element signature="e#513#514#0" expanded="true" />
-                <element signature="e#555#556#0" expanded="true" />
-                <element signature="e#585#586#0" expanded="true" />
-                <element signature="e#635#636#0" expanded="true" />
-                <element signature="e#733#734#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LoginTemplate.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/template/javaCallBack/LoginTemplate.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="16" column="30" selection-start-line="16" selection-start-column="25" selection-end-line="16" selection-end-column="30" />
-              <folding>
-                <element signature="e#905#906#0" expanded="true" />
-                <element signature="e#931#932#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -283,12 +248,12 @@
       <updated>1553172277451</updated>
       <workItem from="1553172279887" duration="2047000" />
       <workItem from="1553233816330" duration="1804000" />
-      <workItem from="1553307389697" duration="633000" />
+      <workItem from="1553307389697" duration="2037000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4484000" />
+    <option name="totallyTimeSpent" value="5888000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
@@ -490,22 +455,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/template/javaCallBack/Client.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="640">
-          <caret line="41" column="56" selection-start-line="41" selection-start-column="56" selection-end-line="41" selection-end-column="56" />
+        <state relative-caret-position="-101">
+          <caret line="29" column="26" lean-forward="true" selection-end-line="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/template/javaCallBack/LoginTemplate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="28" column="5" lean-forward="true" selection-end-line="51" />
+          <folding>
+            <element signature="e#905#906#0" expanded="true" />
+            <element signature="e#931#932#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/template/javaCallBack/LoginCallback.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="526">
-          <caret line="32" column="81" selection-start-line="32" selection-start-column="81" selection-end-line="32" selection-end-column="81" />
+        <state relative-caret-position="379">
+          <caret line="23" column="50" lean-forward="true" selection-end-line="34" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/template/javaCallBack/LoginModel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="469">
-          <caret line="40" column="18" selection-start-line="40" selection-start-column="18" selection-end-line="40" selection-end-column="18" />
+        <state relative-caret-position="564">
+          <caret line="45" lean-forward="true" selection-end-line="45" />
           <folding>
             <element signature="e#335#336#0" expanded="true" />
             <element signature="e#365#366#0" expanded="true" />
@@ -517,17 +493,6 @@
             <element signature="e#585#586#0" expanded="true" />
             <element signature="e#635#636#0" expanded="true" />
             <element signature="e#733#734#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/template/javaCallBack/LoginTemplate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="16" column="30" selection-start-line="16" selection-start-column="25" selection-end-line="16" selection-end-column="30" />
-          <folding>
-            <element signature="e#905#906#0" expanded="true" />
-            <element signature="e#931#932#0" expanded="true" />
           </folding>
         </state>
       </provider>
