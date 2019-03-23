@@ -1,0 +1,208 @@
+模板模式实现的方式除了继承还可以通过java方法回调，组合模式实现
+
+java回调方式
+
+
+package com.template.javaCallBack;
+
+/**
+ * @Autor : heyanfeng22
+ * @Description :
+ * @Date:Create:in 2019/3/22 17:29
+ * @Modified By:
+ */
+public class LoginModel
+{
+    /**
+     * 登录人员的编号，通用的，可能是用户编号，也可能是工作人员编号
+     */
+    private String loginId;
+    /**
+     * 登录的密码
+     */
+    private String pwd;
+
+    public String getLoginId()
+    {
+        return loginId;
+    }
+
+    public void setLoginId(String loginId)
+    {
+        this.loginId = loginId;
+    }
+
+    public String getPwd()
+    {
+        return pwd;
+    }
+
+    public void setPwd(String pwd)
+    {
+        this.pwd = pwd;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "LoginModel{" + "loginId='" + loginId + '\'' + ", pwd='" + pwd + '\'' + '}';
+    }
+}
+
+
+
+package com.template.javaCallBack;
+
+/**
+ * @Autor : heyanfeng22
+ * @Description :
+ * @Date:Create:in 2019/3/22 17:30
+ * @Modified By:
+ */
+public class LoginTemplate
+{
+    /**
+     * 判断登录数据是否正确，也就是是否能登录成功
+     * @param lm 封装登录数据的Model
+     * @param callback LoginCallback对象
+     * @return true表示登录成功，false表示登录失败
+     */
+    public final boolean login(LoginModel lm,LoginCallback callback){
+        //1：根据登录人员的编号去获取相应的数据
+        LoginModel dbLm = callback.findLoginUser(lm.getLoginId());
+        if(dbLm!=null){
+            //2：对密码进行加密
+            String encryptPwd = callback.encryptPwd(lm.getPwd(),this);
+            //把加密后的密码设置回到登录数据模型里面
+            lm.setPwd(encryptPwd);
+            //3：判断是否匹配
+            return callback.match(lm, dbLm,this);
+        }
+        return false;
+    }
+    /**
+     * 对密码数据进行加密
+     * @param pwd 密码数据
+     * @return 加密后的密码数据
+     */
+    public String encryptPwd(String pwd){
+        return pwd;
+    }
+    /**
+     * 判断用户填写的登录数据和存储中对应的数据是否匹配得上
+     * @param lm 用户填写的登录数据
+     * @param dbLm 在存储中对应的数据
+     * @return true表示匹配成功，false表示匹配失败
+     */
+    public boolean match(LoginModel lm,LoginModel dbLm){
+        if(lm.getLoginId().equals(dbLm.getLoginId())
+                && lm.getPwd().equals(dbLm.getPwd())){
+            return true;
+        }
+        return false;
+    }
+}
+
+
+package com.template.javaCallBack;
+
+/**
+ * @Autor : heyanfeng22
+ * @Description :
+ * @Date:Create:in 2019/3/22 17:30
+ * @Modified By:
+ */
+public interface LoginCallback
+{
+    /**
+     * 根据登录编号来查找和获取存储中相应的数据
+     * @param loginId 登录编号
+     * @return 登录编号在存储中相对应的数据
+     */
+    public LoginModel findLoginUser(String loginId);
+    /**
+     * 对密码数据进行加密
+     * @param pwd 密码数据
+     * @param template LoginTemplate对象，通过它来调用在
+     *              LoginTemplate中定义的公共方法或缺省实现
+     * @return 加密后的密码数据
+     */
+    public String encryptPwd(String pwd, LoginTemplate template);
+    /**
+     * 判断用户填写的登录数据和存储中对应的数据是否匹配得上
+     * @param lm 用户填写的登录数据
+     * @param dbLm 在存储中对应的数据
+     * @param template LoginTemplate对象，通过它来调用在
+     *              LoginTemplate中定义的公共方法或缺省实现
+     * @return true表示匹配成功，false表示匹配失败
+     */
+    public boolean match(LoginModel lm, LoginModel dbLm, LoginTemplate template);
+}
+
+
+
+
+package com.template.javaCallBack;
+
+/**
+ * @Autor : heyanfeng22
+ * @Description :
+ * @Date:Create:in 2019/3/22 17:30
+ * @Modified By:
+ */
+public class Client
+{
+    public static void main(String[] args) {
+        //准备登录人的信息
+        LoginModel lm = new LoginModel();
+        lm.setLoginId("admin");
+        lm.setPwd("workerpwd");
+        //准备用来进行判断的对象
+        LoginTemplate lt = new LoginTemplate();
+
+        //进行登录测试，先测试普通人员登录
+        boolean flag = lt.login(lm,new LoginCallback(){
+            public String encryptPwd(String pwd, LoginTemplate template) {
+                //自己不需要，直接转调模板中的默认实现
+                return template.encryptPwd(pwd);
+            }
+            public LoginModel findLoginUser(String loginId) {
+                // 这里省略具体的处理，仅做示意，返回一个有默认数据的对象
+                LoginModel lm = new LoginModel();
+                lm.setLoginId(loginId);
+                lm.setPwd("testpwd");
+                return lm;
+            }
+            public boolean match(LoginModel lm, LoginModel dbLm,
+                                 LoginTemplate template) {
+                //自己不需要覆盖，直接转调模板中的默认实现
+                return template.match(lm, dbLm);
+            }
+
+        });
+        System.out.println("可以进行普通人员登录="+flag);
+
+        //测试工作人员登录
+        boolean flag2 = lt.login(lm,new LoginCallback(){
+            public String encryptPwd(String pwd, LoginTemplate template) {
+                //覆盖父类的方法，提供真正的加密实现
+                //这里对密码进行加密，比如使用：MD5、3DES等等，省略了
+                System.out.println("使用MD5进行密码加密");
+                return pwd;
+            }
+            public LoginModel findLoginUser(String loginId) {
+                // 这里省略具体的处理，仅做示意，返回一个有默认数据的对象
+                LoginModel lm = new LoginModel();
+                lm.setLoginId(loginId);
+                lm.setPwd("workerpwd");
+                return lm;
+            }
+            public boolean match(LoginModel lm, LoginModel dbLm,
+                                 LoginTemplate template) {
+                //自己不需要覆盖，直接转调模板中的默认实现
+                return template.match(lm, dbLm);
+            }
+        });
+        System.out.println("可以登录工作平台="+flag2);
+    }
+}
