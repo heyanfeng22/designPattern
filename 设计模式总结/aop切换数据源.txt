@@ -1,0 +1,180 @@
+package com.web.billCheck.util;
+
+import javax.sql.DataSource;
+
+import org.apache.log4j.Logger;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.ailk.common.simple.SimpleDao;
+import com.web.ioap.service.DataSourceService;
+
+/**
+ * 计费检测平台项目：数据源切换切面类
+ *
+ */
+@SuppressWarnings({"deprecation"})
+@Component
+@Aspect
+public class DataSourceAdvisor{
+	
+	private static Logger log = Logger.getLogger(DataSourceAdvisor.class);
+	
+	@Autowired
+    private DataSourceService dataSourceService;
+	
+	
+	@Pointcut("execution(* com.web.billCheck.dao.*.*(..)) || execution(* com.web.billCheck.report.dao.*.*(..))")
+	private void billCheckPointCut(){}
+	
+	@Before("billCheckPointCut()")
+	public void setDataSource(JoinPoint joinPoint) throws Exception{
+		SimpleDao dao = null;
+		Object obj = joinPoint.getTarget();
+		if(obj instanceof SimpleDao){
+			dao = (SimpleDao)obj;
+			log.debug("the object: " +obj.getClass().getName()+" is instanceof SimpleDao, cast success");
+			DataSource daoDataSource = dao.getDataSource();
+			DataSource c3p0DataSource = DataSourceManager.getInstance().getDataSource();
+			if(daoDataSource==null){
+				dao.setDataSource(c3p0DataSource);
+				log.debug("set dataSource success");
+			}
+			if(daoDataSource!=c3p0DataSource){
+				dao.setDataSource(c3p0DataSource);
+				log.debug("set dataSource success");
+			}
+			//String dbConnectXml = ZooDAO.getData(ZooDataLoader.PATH_LOGINCONNECT);
+			//DataSource dataSource = dataSourceService.getMysqlDataSource("teldb_billcheck",dbConnectXml);//teldb_billcheck
+			//dao.setDataSource(c3p0DataSource);
+		}else{
+			log.debug("***Notice:the object: " +obj.getClass().getName()+" is not instanceof SimpleDao");
+		}
+		
+	}	
+
+}
+
+
+
+
+
+
+
+
+
+
+
+package com.web.billCheck.util;
+
+import java.beans.PropertyVetoException;
+import java.io.ByteArrayInputStream;
+import java.util.List;
+
+import javax.sql.DataSource;
+
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.web.cloudAgent.dao.ZooDAO;
+import com.web.cloudAgent.dao.ZooDataLoader;
+import com.web.cloudAgent.service.AESService;
+
+/**
+ * 提供基于c3p0数据源单例供计费检测平台项目使用
+ *
+ */
+public class DataSourceManager {
+	
+	private static DataSourceManager dataSourceManager = new DataSourceManager();
+	
+	private ComboPooledDataSource dataSource;
+	
+	private DataSourceManager() {
+		dataSource = new ComboPooledDataSource();		
+		copyFromParentSource(dataSource);
+		String dbConnectXml = ZooDAO.getData(ZooDataLoader.PATH_LOGINCONNECT);
+		String[] urlUserPwd = getUrlUserPwd("teldb_billcheck",dbConnectXml);//测试mysql_billcheck
+		setUrlUserPwd(dataSource,urlUserPwd);
+	}
+
+	public static DataSourceManager getInstance(){
+		return dataSourceManager;
+	}
+	
+	public DataSource getDataSource(){
+		return dataSource;
+	}
+	
+	public static void copyFromParentSource(ComboPooledDataSource dataSource) {
+		ComboPooledDataSource c3p0DataSource = SpringContextHolder.getBean("parentSource");//使用c3p0通用配置
+		dataSource.setAcquireIncrement(c3p0DataSource.getAcquireIncrement());
+		dataSource.setMaxIdleTime(c3p0DataSource.getMaxIdleTime());
+		dataSource.setInitialPoolSize(c3p0DataSource.getInitialPoolSize());
+		dataSource.setMaxPoolSize(c3p0DataSource.getMaxPoolSize());
+		dataSource.setMinPoolSize(c3p0DataSource.getMinPoolSize());
+		dataSource.setMaxStatements(c3p0DataSource.getMaxStatements());
+		dataSource.setAcquireRetryDelay(c3p0DataSource.getAcquireRetryDelay());
+		dataSource.setAcquireRetryAttempts(c3p0DataSource.getAcquireRetryAttempts());
+		dataSource.setMaxStatementsPerConnection(c3p0DataSource.getMaxStatementsPerConnection());		
+	}
+	
+    public static String[] getUrlUserPwd(String db_id, String dbConnectXml){
+    	SAXReader saxReader = new SAXReader();
+        Document doc = null;
+        saxReader.setEncoding("utf-8");
+        try {
+			doc = saxReader.read(new ByteArrayInputStream(dbConnectXml.getBytes("UTF-8")));
+			Element element = doc.getRootElement();
+	        List<Element> els = element.elements();
+	        String url = "";
+	        String user = "";
+	        String pwd = "";
+	        for(Element ele : els) {
+	            if(ele.elementText("db_id").equals(db_id)) {
+	                String ip = ele.elementText("connect_host");
+	                String port = ele.elementText("connect_port");
+	                String sn = ele.elementText("connect_database");
+	                url = "jdbc:mysql://" + ip + ":" + port + "/" + sn;
+	                user = ele.elementText("user_name");
+	                pwd = ele.elementText("user_pwd");                
+	                // 判断解密
+	                pwd = ele.elementText("user_pwd");
+	                String encrypt_type = ele.elementText("encrypt_type");
+	                if(!"0".equals(encrypt_type)) {
+	                    pwd = AESService.getDecrypt(pwd);
+	                }
+	            }
+	        }
+	        if(url.equals("") || user.equals("") || pwd.equals("")) {
+	            System.out.println("database connection config error. db_id:" + db_id);
+	            return null;
+	        }
+	        return new String[]{url,user,pwd};
+		} catch (Exception e) {
+			e.printStackTrace();
+		}                
+        return null;        
+    }
+    
+    public static void setUrlUserPwd(DataSource datasource,String[] urlUserPwd){
+    	if(datasource instanceof ComboPooledDataSource){
+    		ComboPooledDataSource c3p0DataSource = (ComboPooledDataSource)datasource;
+    		try {
+				c3p0DataSource.setDriverClass("com.mysql.jdbc.Driver");
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+			c3p0DataSource.setJdbcUrl(urlUserPwd[0]);
+			c3p0DataSource.setUser(urlUserPwd[1]);
+			c3p0DataSource.setPassword(urlUserPwd[2]);
+    	}
+    	
+    }
+}

@@ -1,0 +1,22 @@
+工厂模式：根据现有条件返回所需类实例对象
+单例模式：有且只能有一个类实例
+代理模式：自己不干活，第三方帮办事，且可定制增加服务
+原型模式：最简单的方法创建出目标类的另一个实例对象
+委派模式：根据条件，分发职责
+策略模式：并联的多个选择，结果是一样的
+模板模式：相同的职责放一起，定制的分支往下传
+适配器模式：难以共存的婆媳关系之间的粘合剂
+装饰者模式：只是简单的化妆修饰，不是整容
+观察者模式：有消息大家都收到通知
+
+Spring 用到的aop 某一模块用到了切换数据源
+	   ico:配置扫描的所有类
+	   
+	   <context:component-scan base-package="com.springRESTful,com.asiainfo.util.common,com.asiainfo.quotaEvaluate,com.linkage.*,com.asiainfo.*" >
+		<context:exclude-filter type="annotation"  expression="org.springframework.stereotype.Controller" /> 
+	</context:component-scan>
+	
+		di:   action类中调用service的引用
+				@Autowired
+				HotPointService hotPointService;
+		
